@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   LayoutDashboard,
   Users,
@@ -56,6 +57,7 @@ const navItems = [
 
 const AppLayout = () => {
   const location = useLocation();
+  const { profile, signOut } = useAuth();
 
   const isActive = (href: string) => {
     if (href === "/") {
@@ -63,6 +65,15 @@ const AppLayout = () => {
     }
     return location.pathname.startsWith(href);
   };
+
+  const initials = profile?.full_name
+    ? profile.full_name
+        .split(" ")
+        .map((word) => word[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "PT";
 
   return (
     <SidebarProvider>
@@ -73,9 +84,9 @@ const AppLayout = () => {
               <Sparkles className="size-5" />
             </div>
             <div className="space-y-0.5">
-              <p className="font-semibold leading-tight">Crystal Starfish</p>
+              <p className="font-semibold leading-tight">PsyTrack</p>
               <p className="text-xs text-muted-foreground">
-                Inteligencia de talentos
+                Avaliacoes psicologicas
               </p>
             </div>
           </div>
@@ -118,17 +129,29 @@ const AppLayout = () => {
           <div className="flex items-center gap-3 rounded-xl bg-sidebar-accent/20 px-3 py-2">
             <Avatar className="size-9 border border-primary/10">
               <AvatarFallback className="bg-primary/10 text-sm font-semibold text-primary">
-                DC
+                {initials}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-1 flex-col">
-              <span className="text-sm font-semibold">Daniel Correia</span>
-              <span className="text-xs text-muted-foreground">People Ops</span>
+              <span className="text-sm font-semibold">
+                {profile?.full_name ?? "Conta PsyTrack"}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {profile?.company_name ?? "Workspace"}
+              </span>
             </div>
-            <Badge variant="outline" className="text-[11px]">
-              Admin
+            <Badge variant="outline" className="text-[11px] capitalize">
+              {profile?.role ?? "usuario"}
             </Badge>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs text-muted-foreground"
+            onClick={signOut}
+          >
+            Sair
+          </Button>
         </SidebarFooter>
         <SidebarRail />
       </Sidebar>
@@ -138,7 +161,7 @@ const AppLayout = () => {
           <Separator orientation="vertical" className="h-6" />
           <div className="flex flex-1 flex-col">
             <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
-              Crystal Starfish
+              PsyTrack
             </p>
             <p className="font-semibold">
               Insights sobre cultura e desenvolvimento
